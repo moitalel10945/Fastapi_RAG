@@ -1,0 +1,30 @@
+PROPERTY MANAGEMENT SYSTEM USER GUIDE
+
+TENANT REGISTRATION
+
+To register a new tenant:
+
+1. Click the Tenants menu.
+2. Click Add Tenant.
+3. Enter the tenant's personal details.
+4. Assign the tenant to a property.
+5. Click Save.
+
+RENT PAYMENTS
+
+To record rent:
+
+1. Open Rent Payments.
+2. Search for the tenant.
+3. Enter the amount paid.
+4. Choose the payment date.
+5. Save the payment.
+
+REPORTS
+
+To generate rent reports:
+
+1. Open Reports.
+2. Select Rent Collection.
+3. Choose the month.
+4. Click Generate Report.
