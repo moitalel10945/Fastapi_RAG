@@ -15,25 +15,25 @@ embedding_function = SentenceTransformerEmbeddingFunction(
 )
 
 collection = client.get_or_create_collection(
-    name="property_manual",
+    name="morgan_personal",
     embedding_function=embedding_function
 )
 
 
-# Load the manual
-document_path = Path("documents/tenant_manual.txt")
+# Load your personal knowledge document
+document_path = Path("documents/morgan_personal.md")
 text = document_path.read_text(encoding="utf-8")
 
 
-# Split the manual into named sections
+# Identify Markdown headings
 section_pattern = re.compile(
-    r"(?m)^(TENANT REGISTRATION|RENT PAYMENTS|REPORTS)\s*$"
+    r"(?m)^#{1,3}\s+(.+?)\s*$"
 )
 
 matches = list(section_pattern.finditer(text))
 
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=200,
+    chunk_size=300,
     chunk_overlap=50
 )
 
@@ -41,8 +41,9 @@ chunk_ids = []
 chunk_documents = []
 chunk_metadatas = []
 
+# Process each section
 for index, match in enumerate(matches):
-    section = match.group(1)
+    section = match.group(1).strip()
 
     start = match.end()
     end = (
@@ -52,22 +53,32 @@ for index, match in enumerate(matches):
     )
 
     section_text = text[start:end].strip()
-    chunks = text_splitter.split_text(section_text)
 
-    for chunk in chunks:
-        chunk_ids.append(f"{section.lower().replace(' ', '_')}_{len(chunk_ids)}")
+    # Keep the section heading with its content
+    section_content = f"{section}\n{section_text}"
+
+    chunks = text_splitter.split_text(section_content)
+
+    for chunk_index, chunk in enumerate(chunks):
+        chunk_ids.append(
+            f"personal_{index}_{chunk_index}"
+        )
+
         chunk_documents.append(chunk)
+
         chunk_metadatas.append({
             "source": document_path.name,
             "section": section
         })
 
 
-# Replace the existing collection contents with the newly ingested chunks
+# Replace previously ingested personal information
 if collection.count() > 0:
     existing_ids = collection.get()["ids"]
     collection.delete(ids=existing_ids)
 
+
+# Store the new chunks
 if chunk_ids:
     collection.add(
         ids=chunk_ids,
@@ -75,7 +86,7 @@ if chunk_ids:
         metadatas=chunk_metadatas
     )
 
-print(f"Stored {len(chunk_ids)} chunks successfully!")
+print(f"Stored {len(chunk_ids)} personal knowledge chunks!")
 
 for section in dict.fromkeys(
     metadata["section"] for metadata in chunk_metadatas

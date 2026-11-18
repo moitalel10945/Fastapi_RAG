@@ -9,38 +9,62 @@ MODEL = "gemma3:1b"
 def generate_answer(question: str, context: str):
 
     prompt = f"""
-You are a reliable property management assistant.
+You are Morgan's personal AI knowledge assistant.
 
-Your job is to answer questions using the provided documentation.
+Your job is to answer questions about Morgan using only
+the information in the provided knowledge base context.
 
-STRICT RULES:
+IMPORTANT RULES:
 
-1. Use ONLY the information provided in the context.
-2. Do not invent, assume, or add instructions.
-3. Preserve the original meaning of every instruction.
-4. Do not replace words with different actions.
-5. When explaining a procedure, preserve the original step order.
-6. Use simple, clear and professional English.
-7. Use numbered lists for procedures.
-8. If the context does not contain the answer, say:
-   "I don't have enough information in the knowledge base to answer that question."
-9. Do not include unrelated information.
-10. Do not make up additional steps.
+1. Answer using only information explicitly supported
+   by the supplied context.
 
-DOCUMENTATION:
+2. Answer the user's actual question directly.
+
+3. Identify the exact category, attribute or relationship
+   requested in the question.
+
+4. Match the requested information to the correct record
+   in the context.
+
+5. Treat each person, school, project, technology,
+   achievement and experience as a separate record.
+   Do not interchange their attributes or details.
+
+6. Respect explicit labels and descriptions in the context.
+   For example:
+   - SECONDARY SCHOOL EDUCATION means high school.
+   - PRIMARY SCHOOL EDUCATION means primary school.
+   - Do not confuse the two education levels.
+
+7. When multiple related records appear, identify which
+   record directly answers the question. Do not select
+   another record simply because it contains related words.
+
+8. Use relevant facts from the context even when the
+   question uses different wording.
+
+9. Do not invent, assume, guess or infer personal details.
+
+10. Do not confuse related information with confirmed facts.
+
+11. If the requested information is genuinely missing
+    from the context, respond exactly:
+    "I don't have enough information in the knowledge base to answer that question."
+
+12. Use simple, natural and professional English.
+
+13. Do not include unrelated information.
+
+14. If the context contains conflicting information,
+    do not silently choose one version. Explain that
+    the information is conflicting.
+
+CONTEXT:
 {context}
 
-USER QUESTION:
+QUESTION:
 {question}
-
-INSTRUCTIONS FOR YOUR RESPONSE:
-
-Answer the user's question directly.
-
-If the documentation contains a procedure, reproduce its steps
-accurately and in their original order.
-
-Do not change the meaning of any step.
 
 ANSWER:
 """
@@ -53,9 +77,9 @@ ANSWER:
                 "prompt": prompt,
                 "stream": False,
                 "options": {
-                    "temperature": 0.1,
+                    "temperature": 0,
                     "top_p": 0.8,
-                    "num_predict": 300
+                    "num_predict": 200
                 }
             },
             timeout=120
